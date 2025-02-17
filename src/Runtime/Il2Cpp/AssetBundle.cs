@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+//using System.Runtime.InteropServices;
 using UnityEngine;
 using UniverseLib.Runtime.Il2Cpp;
 #if INTEROP
@@ -54,13 +55,78 @@ namespace UniverseLib
         [HideFromIl2Cpp]
         public static AssetBundle LoadFromMemory(byte[] binary, uint crc = 0)
         {
+            //original, not working for 6000.0.37f1
             IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
                     "UnityEngine.AssetBundle::LoadFromMemory_Internal",
                     "UnityEngine.AssetBundle::LoadFromMemory")
                 .Invoke(((Il2CppStructArray<byte>)binary).Pointer, crc);
 
+
+            //new attempt to fix it but still not working
+            //var il2cppBytes = new Il2CppStructArray<byte>(binary.Length);
+
+            //for (int i = 0; i < binary.Length; i++)
+            //{
+            //    il2cppBytes[i] = binary[i];
+            //}
+
+            //var ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
+            //    "UnityEngine.AssetBundle::LoadFromMemory_Internal",
+            //    "UnityEngine.AssetBundle::LoadFromMemory"
+            //).Invoke(il2cppBytes.Pointer, crc);
+
+            //latest attempt to fix it
+            //IntPtr ptr;
+            //if (Application.unityVersion == "6000.0.35f1")
+            //{
+            //    // Alternate approach for Unity version 6000.0.35f1
+            //    IntPtr binaryPtr = Marshal.AllocHGlobal(binary.Length);
+            //    //IntPtr binaryPtr = IL2CPP.ManagedArrayToIl2Cpp(binary);
+            //    Marshal.Copy(binary, 0, binaryPtr, binary.Length);
+            //    ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
+            //            "UnityEngine.AssetBundle::LoadFromMemory_Internal",
+            //            "UnityEngine.AssetBundle::LoadFromMemory")
+            //        .Invoke(binaryPtr, crc);
+            //    Marshal.FreeHGlobal(binaryPtr);
+            //}
+            //else
+            //{
+            //    ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
+            //            "UnityEngine.AssetBundle::LoadFromMemory_Internal",
+            //            "UnityEngine.AssetBundle::LoadFromMemory")
+            //        .Invoke(((Il2CppStructArray<byte>)binary).Pointer, crc);
+            //}
+
+            //latest latest attempt to fix it
+            //IntPtr ptr;
+            //if (Application.unityVersion == "6000.0.35f1")
+            //{
+            //    // Alternate approach for Unity version 6000.0.35f1
+            //    ptr = CustomLoadFromMemory(binary, crc);
+            //}
+            //else
+            //{
+            //    ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
+            //            "UnityEngine.AssetBundle::LoadFromMemory_Internal",
+            //            "UnityEngine.AssetBundle::LoadFromMemory")
+            //        .Invoke(((Il2CppStructArray<byte>)binary).Pointer, crc);
+            //}
+
             return ptr != IntPtr.Zero ? new AssetBundle(ptr) : null;
         }
+        //private static IntPtr CustomLoadFromMemory(byte[] binary, uint crc)
+        //{
+            // Implement custom loading mechanism here
+            // This is a placeholder implementation
+            //IntPtr binaryPtr = Marshal.AllocHGlobal(binary.Length);
+            //Marshal.Copy(binary, 0, binaryPtr, binary.Length);
+            //IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
+            //        "UnityEngine.AssetBundle::LoadFromMemory_Internal",
+            //        "UnityEngine.AssetBundle::LoadFromMemory")
+            //    .Invoke(binaryPtr, crc);
+            //Marshal.FreeHGlobal(binaryPtr);
+            //return ptr;
+        //}
 
         // AssetBundle.GetAllLoadedAssetBundles()
 
