@@ -118,6 +118,7 @@ namespace UniverseLib
         {
             // Always yield at least one frame, otherwise if the first startupDelay is 0f this would run immediately and
             // not allow other Init calls to set a higher delay.
+            goto one;
             yield return null;
 
             Stopwatch sw = new();
@@ -125,6 +126,7 @@ namespace UniverseLib
             while (ReflectionUtility.Initializing || sw.ElapsedMilliseconds * 0.001f < startupDelay)
                 yield return null;
 
+            one:
             // Initialize late startup processes
             InputManager.Init();
             UniversalUI.Init();
