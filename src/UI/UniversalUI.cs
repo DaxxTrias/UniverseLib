@@ -249,9 +249,15 @@ namespace UniverseLib.UI
 
         static AssetBundle LoadBundle(string id)
         {
-            AssetBundle bundle = AssetBundle.LoadFromMemory(ReadFully(typeof(Universe)
-                    .Assembly
-                    .GetManifestResourceStream($"UniverseLib.Resources.{id}.bundle")));
+            string bundlePath = Path.Combine(Application.streamingAssetsPath, $"{id}.bundle");
+            Universe.Log($"Loading bundle from path: {bundlePath}");
+            AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
+            //if (bundle == null)
+            //{
+                //bundle = AssetBundle.LoadFromMemory(ReadFully(typeof(Universe)
+                //    .Assembly
+                //    .GetManifestResourceStream($"UniverseLib.Resources.{id}.bundle")));
+            //}
             if (bundle)
                 Universe.Log($"Loaded {id} bundle for Unity {Application.unityVersion}");
             return bundle;
