@@ -58,6 +58,14 @@ namespace UniverseLib
             while (coro.MoveNext())
             {
                 Universe.Log("Loading game modules...");
+                if (coro.Current == null)
+                {
+                    Universe.Log("Current entity in coroutine is null.");
+                }
+                else
+                {
+                    Universe.Log($"Current entity in coroutine: {coro.Current}");
+                }
                 yield return null;
             }
 
@@ -637,17 +645,32 @@ namespace UniverseLib
             if (Directory.Exists(dir))
             {
                 Universe.Log("Starting TryLoadGameModules() for loop");
-                foreach (string filePath in Directory.GetFiles(dir, "*.dll"))
+                string[] files = Directory.GetFiles(dir, "*.dll");
+                Universe.Log($"Found {files.Length} .dll files.");
+                foreach (string filePath in files)
                 {
-                    if (initStopwatch.ElapsedMilliseconds > 10)
-                    {
-                        yield return null;
-                        initStopwatch.Reset();
-                        initStopwatch.Start();
-                    }
+                    //if (initStopwatch.ElapsedMilliseconds > 10)
+                    //{
+                    //    //yield return null;
+                    //    initStopwatch.Reset();
+                    //    initStopwatch.Start();
+                    //}
 
                     if (filePath != null)
-                        DoLoadModule(filePath);
+                    {
+                        try
+                        {
+                            Universe.Log($"Attempting to load module: {filePath}");
+                            bool result = DoLoadModule(filePath);
+                            Universe.Log($"Result of loading module {filePath}: {result}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Universe.LogWarning($"Exception while loading module {filePath}: {ex}");
+                        }
+                    }
+                    else
+                        yield return null;
                 }
                 Universe.Log("Bye from TryLoadGameModules()");
             }

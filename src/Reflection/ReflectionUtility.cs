@@ -76,11 +76,18 @@ public class ReflectionUtility
     {
         // For mono games, force load all 'Managed/' assemblies on startup.
         if (Universe.Context == RuntimeContext.Mono)
+        {
+            Universe.Log("Force loading managed assemblies for Mono context.");
             ForceLoadManagedAssemblies();
+        }
 
         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            Universe.Log($"Caching types for assembly: {asm.FullName}");
             CacheTypes(asm);
+        }
 
+        Universe.Log("Subscribing to AssemblyLoad event.");
         AppDomain.CurrentDomain.AssemblyLoad += AssemblyLoaded;
     }
 
@@ -114,10 +121,12 @@ public class ReflectionUtility
 
     internal static void CacheTypes(Assembly asm)
     {
+        Universe.Log($"Caching types from assembly: {asm.FullName}");
         foreach (Type type in asm.TryGetTypes())
         {
             try
             {
+                //Universe.Log($"Processing type: {type.FullName}");
                 string namespaceStr = type.Namespace;
 
                 // Cache namespace if there is one
@@ -133,6 +142,7 @@ public class ReflectionUtility
                         }
                         i++;
                     }
+                    Universe.Log($"Inserting namespace: {namespaceStr} at position {i}");
                     AllNamespaces.Insert(i, namespaceStr);
                 }
             }
@@ -142,9 +152,11 @@ public class ReflectionUtility
             }
 
             // Cache the type. Overwrite type if one exists with the full name
+            //Universe.Log($"Caching type: {type.FullName}");
             AllTypes[type.FullName] = type;
 
             // Invoke listener
+            //Universe.Log($"Invoking OnTypeLoaded for type: {type.FullName}");
             OnTypeLoaded?.Invoke(type);
         }
     }
