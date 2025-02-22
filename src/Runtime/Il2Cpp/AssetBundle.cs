@@ -55,7 +55,7 @@ namespace UniverseLib
         [HideFromIl2Cpp]
         public static AssetBundle LoadFromMemory(byte[] binary, uint crc = 0)
         {
-            //original, not working for 6000.0.37f1
+            //original, not working for 6000.0.35f1
             IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
                     "UnityEngine.AssetBundle::LoadFromMemory_Internal",
                     "UnityEngine.AssetBundle::LoadFromMemory")
