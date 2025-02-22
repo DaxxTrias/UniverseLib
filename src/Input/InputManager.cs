@@ -37,6 +37,7 @@ namespace UniverseLib.Input
 
             // With BepInEx Il2CppInterop, for some reason InputLegacyModule may be loaded but our ReflectionUtility doesn't cache it?
             // No idea why or what is happening but this solves it for now.
+            System.Diagnostics.Debugger.Break();
             if (ReflectionUtility.GetTypeByName("UnityEngine.Input") == null)
             {
                 foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
@@ -46,7 +47,7 @@ namespace UniverseLib.Input
                         ReflectionUtility.CacheTypes(asm);
                         break;
                     }
-                } 
+                }
             }
 
             if (LegacyInput.TInput != null)
@@ -62,7 +63,7 @@ namespace UniverseLib.Input
                     Universe.Log("Initialized Legacy Input support");
                     return;
                 }
-                catch 
+                catch
                 {
                     // It's not working, we'll fall back to InputSystem.
                 }

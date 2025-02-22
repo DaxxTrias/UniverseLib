@@ -53,21 +53,28 @@ namespace UniverseLib
             Stopwatch sw = new();
             sw.Start();
 
+            Universe.Log("Starting TryLoadGameModules coroutine.");
             IEnumerator coro = TryLoadGameModules();
             while (coro.MoveNext())
+            {
+                Universe.Log("Loading game modules...");
                 yield return null;
+            }
 
             Universe.Log($"Loaded Unhollowed modules in {sw.ElapsedMilliseconds * 0.001f} seconds.");
 
             sw.Reset();
             sw.Start();
 
+            Universe.Log("Building deobfuscation cache.");
             BuildDeobfuscationCache();
 
             Universe.Log($"Setup deobfuscation cache in {sw.ElapsedMilliseconds * 0.001f} seconds.");
 
+            Universe.Log("Subscribing to OnTypeLoaded event.");
             OnTypeLoaded += TryCacheDeobfuscatedType;
 
+            Universe.Log("Initialization complete.");
             Initializing = false;
         }
 
@@ -629,6 +636,7 @@ namespace UniverseLib
             string dir = ConfigManager.Unhollowed_Modules_Folder;
             if (Directory.Exists(dir))
             {
+                Universe.Log("Starting TryLoadGameModules() for loop");
                 foreach (string filePath in Directory.GetFiles(dir, "*.dll"))
                 {
                     if (initStopwatch.ElapsedMilliseconds > 10)
@@ -638,8 +646,10 @@ namespace UniverseLib
                         initStopwatch.Start();
                     }
 
-                    DoLoadModule(filePath);
+                    if (filePath != null)
+                        DoLoadModule(filePath);
                 }
+                Universe.Log("Bye from TryLoadGameModules()");
             }
             else
                 Universe.LogWarning($"Expected Unhollowed folder path does not exist: '{dir}'. " +
@@ -653,13 +663,14 @@ namespace UniverseLib
 
             try
             {
-                //Universe.Log($"Loading assembly '{Path.GetFileName(fullPath)}'");
+                System.Diagnostics.Debugger.Break();
+                Universe.Log($"Loading assembly '{Path.GetFileName(fullPath)}'");
                 Assembly.LoadFrom(fullPath);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
-                //Universe.LogWarning($"Failed loading module '{Path.GetFileName(fullPath)}'! {e.ReflectionExToString()}");
+                Universe.LogWarning($"Failed loading module '{Path.GetFileName(fullPath)}'! {e.ReflectionExToString()}");
                 return false;
             }
         }

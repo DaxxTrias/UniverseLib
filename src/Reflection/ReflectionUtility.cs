@@ -89,7 +89,7 @@ public class ReflectionUtility
         if (args.LoadedAssembly == null || args.LoadedAssembly.GetName().Name == "completions")
             return;
 
-        // Universe.Log($"\t - Assembly loaded: {args.LoadedAssembly.GetName().Name}");
+        Universe.Log($"\t - Assembly loaded: {args.LoadedAssembly.GetName().Name}");
 
         CacheTypes(args.LoadedAssembly);
     }
